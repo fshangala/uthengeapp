@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
 
 AppBar deliveryAppBar = AppBar(title: const Text('Uthenge - Delivery Service'));
 
