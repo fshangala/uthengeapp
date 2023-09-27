@@ -9,6 +9,12 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    permissions: write-all
+    
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-java@v3
@@ -37,32 +43,9 @@ jobs:
           name: github-pages
           path: build/web
 
-  deploy:
-    name: Deploy Web Build
-    needs: build
-    runs-on: ubuntu-latest
-
-    permissions:
-      contents: write
-      id-token: write
-      pages: write
-    
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-
-    steps:
-    - name: Download Web Release
-      uses: actions/download-artifact@v2
-      with:
-        name: github-pages
-
-    - name: Deploy to github pages
-      id: deployment
-      uses: actions/deploy-pages@v2
-
-    #- name: Deploy to gh-pages
-    #  uses: peaceiris/actions-gh-pages@v3
-    #  with:
-    #    github_token: ${{ secrets.GITHUB_TOKEN }}
-    #    publish_dir: ./
+      - name: Deploy gh-pages
+        uses: peaceiris/actions-gh-pages@v3
+        if: ${{ github.ref == 'refs/heads/main' }}
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
