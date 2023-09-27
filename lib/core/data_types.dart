@@ -11,6 +11,7 @@ class DeliveryItem {
 }
 
 class DeliveryRequest {
+  String? id;
   String from;
   String to;
   String detail;
@@ -33,7 +34,8 @@ class DeliveryRequest {
   };
 
   DeliveryRequest(
-      {required this.from,
+      {this.id,
+      required this.from,
       required this.to,
       required this.detail,
       required this.phone,
@@ -76,5 +78,25 @@ class DeliveryRequest {
         .then((value) => callback(true, value.id))
         .onError((error, stackTrace) => callback(false, error.toString()));
   }
+
+  static DeliveryRequest fromFirebase(
+          QueryDocumentSnapshot<Map<String, dynamic>> snapshot) =>
+      DeliveryRequest(
+          id: snapshot.id,
+          from: snapshot.data()['from'],
+          to: snapshot.data()['to'],
+          detail: snapshot.data()['detail'],
+          phone: snapshot.data()['phone'],
+          items: snapshot
+              .data()['items']
+              .map((Map<String, dynamic> e) =>
+                  DeliveryItem(e['name'], e['price']))
+              .toList());
   //const DeliveryRequest( this.from, this.to, this.detail, this.phone, this.items);
+}
+
+class DeliveryFilter {
+  String name;
+  String value;
+  DeliveryFilter(this.name, this.value);
 }

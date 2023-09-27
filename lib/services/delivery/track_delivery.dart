@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-
-import 'includes.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:uthengeapp/core/data_types.dart';
 
 class TrackDeliveryScreen extends StatefulWidget {
   const TrackDeliveryScreen({super.key});
@@ -14,10 +14,23 @@ class _TrackDeliveryState extends State<TrackDeliveryScreen> {
   String phone = '';
   List<DeliveryRequest> deliveryRequests = [];
   Column deliveryRequestsWidget = const Column();
+  FirebaseFirestore db = FirebaseFirestore.instance;
 
   void _trackPhone() {
     if (phone != '') {
-      //
+      db
+          .collection('delivery')
+          .where('phone', isEqualTo: phone)
+          .get()
+          .then((event) {
+        setState(() {
+          deliveryRequests = event.docs.map((e) {
+            return DeliveryRequest.fromFirebase(e);
+          }).toList();
+        });
+      }).onError((error, stackTrace) {
+        //
+      });
     }
   }
 
@@ -55,68 +68,72 @@ class _TrackDeliveryState extends State<TrackDeliveryScreen> {
                   context: context,
                   builder: (_) {
                     return Dialog(
-                      child: ListView(
-                        children: [
-                          Row(
-                            children: [
-                              const Expanded(child: Text('From')),
-                              Text(e.from)
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              const Expanded(child: Text('To')),
-                              Text(e.to)
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              const Expanded(child: Text('Detail')),
-                              Text(e.detail)
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              const Expanded(child: Text('Phone')),
-                              Text(e.phone)
-                            ],
-                          ),
-                          Column(
-                            children: e.items.map((ei) {
-                              return ListTile(
-                                title: Text(ei.name),
-                                subtitle: Text(ei.price.toString()),
-                              );
-                            }).toList(),
-                          ),
-                          Row(
-                            children: [
-                              const Expanded(child: Text('Delivery Fee')),
-                              Text(e.deliveryFee().toString())
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              const Expanded(child: Text('Total')),
-                              Text(e.totalPrice().toString())
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              const Expanded(child: Text('Status')),
-                              Text(e.status)
-                            ],
-                          ),
-                          const Divider(),
-                          Row(
-                            children: [
-                              TextButton(
-                                  onPressed: () => Navigator.of(context).pop(),
-                                  child: const Text('Close')),
-                              _cancelButton(e)
-                            ],
-                          ),
-                        ],
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        child: ListView(
+                          children: [
+                            Row(
+                              children: [
+                                const Expanded(child: Text('From')),
+                                Text(e.from)
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                const Expanded(child: Text('To')),
+                                Text(e.to)
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                const Expanded(child: Text('Detail')),
+                                Text(e.detail)
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                const Expanded(child: Text('Phone')),
+                                Text(e.phone)
+                              ],
+                            ),
+                            Column(
+                              children: e.items.map((ei) {
+                                return ListTile(
+                                  leading: Text(ei.price.toString()),
+                                  title: Text(ei.name),
+                                );
+                              }).toList(),
+                            ),
+                            Row(
+                              children: [
+                                const Expanded(child: Text('Delivery Fee')),
+                                Text(e.deliveryFee().toString())
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                const Expanded(child: Text('Total')),
+                                Text(e.totalPrice().toString())
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                const Expanded(child: Text('Status')),
+                                Text(e.status)
+                              ],
+                            ),
+                            const Divider(),
+                            Row(
+                              children: [
+                                TextButton(
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(),
+                                    child: const Text('Close')),
+                                _cancelButton(e)
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     );
                   });
@@ -146,7 +163,7 @@ class _TrackDeliveryState extends State<TrackDeliveryScreen> {
                   child: const Text('Track'),
                   onPressed: () {
                     _trackPhone();
-                    _trackReference();
+                    //_trackReference();
                   },
                 )
               ],
