@@ -174,22 +174,4 @@ class _TrackDeliveryState extends State<TrackDeliveryScreen> {
       ),
     );
   }
-
-  void _trackReference() {
-    if (phone != '') {
-      setState(() {
-        deliveryRequests.add(DeliveryRequest(
-            from: 'across',
-            to: 'across',
-            detail: 'room 5',
-            phone: '0987654',
-            items: <DeliveryItem>[
-              const DeliveryItem('fish', 0.0),
-              const DeliveryItem('drink', 0.0),
-              const DeliveryItem('bread', 0.0),
-              const DeliveryItem('butter', 0.0),
-            ]));
-      });
-    }
-  }
 }
