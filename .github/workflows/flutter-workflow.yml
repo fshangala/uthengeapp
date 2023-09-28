@@ -9,12 +9,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
-    permissions: write-all
-    
-    concurrency:
-      group: ${{ github.workflow }}-${{ github.ref }}
-
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-java@v3
@@ -42,10 +36,3 @@ jobs:
         with:
           name: github-pages
           path: build/web
-
-      - name: Deploy gh-pages
-        uses: peaceiris/actions-gh-pages@v3
-        if: ${{ github.ref == 'refs/heads/main' }}
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./public

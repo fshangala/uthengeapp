@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:uthengeapp/core/data_types.dart';
+import 'package:uthengeapp/core/function.dart';
 
 class RequestDeliveryScreen extends StatefulWidget {
   const RequestDeliveryScreen({super.key});
@@ -28,28 +29,19 @@ class _RequestDeliveryState extends State<RequestDeliveryScreen> {
   void _submitRequest() {
     showDialog(
         context: context,
+        barrierDismissible: false,
         builder: (_) {
           return Dialog(
             child: Container(
               padding: const EdgeInsets.all(32),
-              child: const CircularProgressIndicator(),
+              child: const Center(child: CircularProgressIndicator()),
             ),
           );
         });
-    deliveryRequest.save(db, (saved, value) {
+    deliveryRequest.save((saved, value) {
       if (saved) {
-        Navigator.of(context).pop();
-        setState(() {
-          deliveryRequest = DeliveryRequest(
-              from: 'across',
-              to: 'across',
-              detail: '',
-              phone: '',
-              items: <DeliveryItem>[]);
-          doc = '$value Request sent! you can track it to check its status.';
-        });
+        Navigator.pushNamed(context, RequestDeliveryScreen.routeName);
       } else {
-        Navigator.of(context).pop();
         setState(() {
           doc = value;
         });
@@ -65,7 +57,7 @@ class _RequestDeliveryState extends State<RequestDeliveryScreen> {
       );
     }).toList();
     return Scaffold(
-        appBar: AppBar(title: const Text('Uthenge - Delivery Service')),
+        appBar: appBar('Request Delivery'),
         body: Container(
           padding: const EdgeInsets.all(32),
           child: ListView(

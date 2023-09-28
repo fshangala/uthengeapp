@@ -14,10 +14,22 @@ class _TrackDeliveryState extends State<TrackDeliveryScreen> {
   String phone = '';
   List<DeliveryRequest> deliveryRequests = [];
   Column deliveryRequestsWidget = const Column();
+  bool initialized = false;
   FirebaseFirestore db = FirebaseFirestore.instance;
 
   void _trackPhone() {
     if (phone != '') {
+      showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (_) {
+            return Dialog(
+              child: Container(
+                padding: const EdgeInsets.all(32),
+                child: const Center(child: CircularProgressIndicator()),
+              ),
+            );
+          });
       db
           .collection('delivery')
           .where('phone', isEqualTo: phone)
@@ -29,7 +41,7 @@ class _TrackDeliveryState extends State<TrackDeliveryScreen> {
           }).toList();
         });
       }).onError((error, stackTrace) {
-        //
+        Navigator.of(context).pop();
       });
     }
   }
@@ -55,8 +67,21 @@ class _TrackDeliveryState extends State<TrackDeliveryScreen> {
     }
   }
 
+  void _initialize(ArgumentsTrackDeliveryScreen args) {
+    if (!initialized) {
+      setState(() {
+        phone = args.phone!;
+        _trackPhone();
+        initialized = true;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final args = ModalRoute.of(context)!.settings.arguments
+        as ArgumentsTrackDeliveryScreen;
+    _initialize(args);
     if (deliveryRequests.isNotEmpty) {
       deliveryRequestsWidget = Column(
         children: deliveryRequests.map((e) {

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:uthengeapp/core/databases.dart';
 
 class DeliveryItem {
   final String name;
@@ -7,6 +8,10 @@ class DeliveryItem {
 
   Map<String, dynamic> itemData() {
     return {"name": name, "price": price};
+  }
+
+  static DeliveryItem fromMap(Map<String, dynamic> data) {
+    return DeliveryItem(data['name'], data['price']);
   }
 }
 
@@ -71,12 +76,21 @@ class DeliveryRequest {
     };
   }
 
-  void save(FirebaseFirestore firestore, void Function(bool, String) callback) {
-    firestore
-        .collection("delivery")
-        .add(requestData())
-        .then((value) => callback(true, value.id))
-        .onError((error, stackTrace) => callback(false, error.toString()));
+  static DeliveryRequest fromMap(String? id, Map<String, dynamic> data) {
+    return DeliveryRequest(
+        id: id,
+        from: data['from'],
+        to: data['to'],
+        detail: data['detail'],
+        phone: data['phone'],
+        items: data['items']
+            .map((Map<String, dynamic> ei) => DeliveryItem.fromMap(ei))
+            .toList());
+  }
+
+  void save(void Function(bool, String) callback) {
+    Database.getDatabase().setItem(
+        "delivery", requestData(), (saved, value) => callback(saved, value));
   }
 
   static DeliveryRequest fromFirebase(
@@ -99,4 +113,9 @@ class DeliveryFilter {
   String name;
   String value;
   DeliveryFilter(this.name, this.value);
+}
+
+class ArgumentsTrackDeliveryScreen {
+  String? phone;
+  ArgumentsTrackDeliveryScreen(this.phone);
 }
