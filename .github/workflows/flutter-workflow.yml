@@ -37,9 +37,18 @@ jobs:
           name: github-pages
           path: build/web
   
-      - uses: FirebaseExtended/action-hosting-deploy@v0
+      - name: Firebase Deploy live web app
+        uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
           firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_EXSAE_TECHNOLOGIES }}'
           channelId: live
           projectId: exsae-technologies
+      
+      - name: Firebase App Distribution
+        uses: hasretsariyer/firebase-app-distribution-github-action@v1
+        with:
+          app_id: ${{secrets.FIREBASE_APP_ID}}
+          firebase_token: ${{secrets.FIREBASE_TOKEN}}
+          app_file: build/app/outputs/apk/release/app-release.apk
+          tester_groups: maintainers
