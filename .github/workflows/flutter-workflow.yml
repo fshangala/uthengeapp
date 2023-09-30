@@ -22,7 +22,6 @@ jobs:
           channel: 'stable'
           cache: true
       - run: flutter pub get
-      #- run: flutter format --set-exit-if-changed .
       - run: flutter analyze .
       - run: flutter build apk
       - run: flutter build web --release
@@ -45,10 +44,11 @@ jobs:
           channelId: live
           projectId: exsae-technologies
       
-      - name: Firebase App Distribution
-        uses: hasretsariyer/firebase-app-distribution-github-action@main
+      - name: Upload apk to ftp
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
-          app_id: ${{secrets.FIREBASE_APP_ID}}
-          firebase_token: ${{secrets.FIREBASE_TOKEN}}
-          app_file: build/app/outputs/apk/release/app-release.apk
-          tester_groups: maintainers
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: build/app/outputs/apk/release/
+          server-dir: ./
