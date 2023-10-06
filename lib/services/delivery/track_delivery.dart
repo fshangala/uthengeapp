@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:uthengeapp/core/data_types.dart';
+import 'package:uthengeapp/core/databases.dart';
 
 class TrackDeliveryScreen extends StatefulWidget {
   const TrackDeliveryScreen({super.key});
@@ -30,18 +31,13 @@ class _TrackDeliveryState extends State<TrackDeliveryScreen> {
               ),
             );
           });
-      db
-          .collection('delivery')
-          .where('phone', isEqualTo: phone)
-          .get()
-          .then((event) {
-        setState(() {
-          deliveryRequests = event.docs.map((e) {
-            return DeliveryRequest.fromFirebase(e);
-          }).toList();
-        });
-      }).onError((error, stackTrace) {
+      DeliveryRequest.getByPhone(phone, (success, deliveryRequest) {
         Navigator.of(context).pop();
+        if (success) {
+          setState(() {
+            deliveryRequests = deliveryRequest;
+          });
+        }
       });
     }
   }
@@ -70,9 +66,9 @@ class _TrackDeliveryState extends State<TrackDeliveryScreen> {
   void _initialize(ArgumentsTrackDeliveryScreen args) {
     if (!initialized) {
       setState(() {
+        initialized = true;
         phone = args.phone!;
         _trackPhone();
-        initialized = true;
       });
     }
   }

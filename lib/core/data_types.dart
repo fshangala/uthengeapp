@@ -93,6 +93,17 @@ class DeliveryRequest {
         "delivery", requestData(), (saved, value) => callback(saved, value));
   }
 
+  static void getByPhone(
+      String phone,
+      void Function(bool success, List<DeliveryRequest> deliveryRequest)
+          callback) {
+    Database.getDatabase().getWhere(
+        'delivery', 'phone', WhereOperator.isEqualTo, phone, (success, data) {
+      callback(success,
+          data.map((e) => DeliveryRequest.fromMap(e['id'], e)).toList());
+    });
+  }
+
   static DeliveryRequest fromFirebase(
           QueryDocumentSnapshot<Map<String, dynamic>> snapshot) =>
       DeliveryRequest(

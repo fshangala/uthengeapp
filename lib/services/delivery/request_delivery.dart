@@ -1,7 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:uthengeapp/core/data_types.dart';
 import 'package:uthengeapp/core/function.dart';
+import 'package:uthengeapp/services/delivery/track_delivery.dart';
 
 class RequestDeliveryScreen extends StatefulWidget {
   const RequestDeliveryScreen({super.key});
@@ -15,7 +15,6 @@ class RequestDeliveryScreen extends StatefulWidget {
 }
 
 class _RequestDeliveryState extends State<RequestDeliveryScreen> {
-  var db = FirebaseFirestore.instance;
   DeliveryRequest deliveryRequest = DeliveryRequest(
       from: 'across',
       to: 'across',
@@ -39,8 +38,10 @@ class _RequestDeliveryState extends State<RequestDeliveryScreen> {
           );
         });
     deliveryRequest.save((saved, value) {
+      Navigator.pop(context);
       if (saved) {
-        Navigator.pushNamed(context, RequestDeliveryScreen.routeName);
+        Navigator.pushNamed(context, TrackDeliveryScreen.routeName,
+            arguments: ArgumentsTrackDeliveryScreen(deliveryRequest.phone));
       } else {
         setState(() {
           doc = value;
