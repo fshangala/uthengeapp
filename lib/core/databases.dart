@@ -1,5 +1,3 @@
-import 'dart:js_interop';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 List<Database> databases = [
@@ -69,11 +67,11 @@ class FirebaseDatabase extends Database {
       default:
         break;
     }
-    if (query.isNull) {
+    if (query == null) {
       callback(false, []);
     } else {
       query
-          ?.get()
+          .get()
           .then((value) => callback(
               true,
               value.docs.map((e) {
